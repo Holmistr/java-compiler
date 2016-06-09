@@ -82,7 +82,7 @@ public class BasicExpressionTest {
     }
 
     @Test
-    public void testExpressionWithoutParenthesses() {
+    public void testExpressionWithoutParenthesis() {
         String expression = "3.4f / 2 < 2 + 1";
         parseExpression(expression);
     }
@@ -141,6 +141,12 @@ public class BasicExpressionTest {
     @Test
     public void testNotEqual() {
         String expression = "1 != 2";
+        parseExpression(expression);
+    }
+
+    @Test
+    public void testNegation() {
+        String expression = "!true";
         parseExpression(expression);
     }
 

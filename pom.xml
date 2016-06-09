@@ -10,6 +10,7 @@
 
    <properties>
       <version.maven.exec.plugin>1.2.1</version.maven.exec.plugin>
+      <version.maven.compiler.plugin>3.5.1</version.maven.compiler.plugin>
       <version.antlr>4.2</version.antlr>
       <version.junit>4.11</version.junit>
    </properties>
@@ -30,6 +31,16 @@
 
    <build>
       <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${version.maven.compiler.plugin}</version>
+            <configuration>
+               <source>1.8</source>
+               <target>1.8</target>
+            </configuration>
+         </plugin>
+
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>

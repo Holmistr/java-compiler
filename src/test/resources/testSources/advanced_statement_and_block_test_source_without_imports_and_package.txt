@@ -1,0 +1,96 @@
+/**
+ * Testing that the grammar recognizes advanced blocks and statements, like classes, methods etc.
+ *
+ * @author Jiri Holusa (jholusa@redhat.com)
+ */
+public class AdvancedStatementAndBlockTest {
+
+    public void testEmptyClass() {
+        String clazz = "class MyClass {}";
+        parseClass(clazz);
+
+        clazz = "public class MyClass {}";
+        parseClass(clazz);
+    }
+
+    public void testConstructor() {
+        String clazz = "class MyClass {" +
+                "public MyClass() {}" +
+                "}";
+        parseClass(clazz);
+    }
+
+    public void testMethod() {
+        String clazz = "class MyClass {" +
+                "public void method1() {}" +
+                "}";
+        parseClass(clazz);
+    }
+
+    public void testMethodWithParams() {
+        String clazz = "class MyClass {" +
+                "public void method1(String param1, int param2) {}" +
+                "}";
+        parseClass(clazz);
+    }
+
+    public void testMethodNonVoidMethod() {
+        String clazz = "class MyClass {" +
+                "public String method1() {}" +
+                "}";
+        parseClass(clazz);
+    }
+
+    public void testPrivateMethod() {
+        String clazz = "class MyClass {" +
+                "private void method1(String param1, int param2) {}" +
+                "}";
+        parseClass(clazz);
+    }
+
+    public void testDefaultMethod() {
+        String clazz = "class MyClass {" +
+                "void method1() {}" +
+                "}";
+        parseClass(clazz);
+    }
+
+    public void testField() {
+        String clazz = "class MyClass {" +
+                "int x;" +
+                "String y;" +
+                "}";
+        parseClass(clazz);
+    }
+
+    public void testPrivateField() {
+        String clazz = "class MyClass {" +
+                "private int x;" +
+                "}";
+        parseClass(clazz);
+    }
+
+    public void testPublicField() {
+        String clazz = "class MyClass {" +
+                "public int x;" +
+                "}";
+        parseClass(clazz);
+    }
+
+    public void testFieldWithDeclaration() {
+        String clazz = "class MyClass {" +
+                "private int x = 10;" +
+                "}";
+        parseClass(clazz);
+    }
+
+    private void parseClass(String statement) {
+        ANTLRInputStream input = new ANTLRInputStream(statement);
+        JavaGrammarLexer lexer = new JavaGrammarLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        JavaGrammarParser parser = new JavaGrammarParser(tokens);
+        parser.setErrorHandler(new BailErrorStrategy()); // fail on first mismatch
+        ParseTree tree = parser.clazzWithEof();
+        //System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+    }
+}

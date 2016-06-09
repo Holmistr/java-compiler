@@ -1,0 +1,26 @@
+/**
+ * Computing Fibonnaci number
+ *
+ * @author Jiri Holusa (jholusa@redhat.com)
+ */
+public class AdvancedStatementAndBlockTest {
+
+    /**
+    * Fibonacciho posloupnost dynamicky
+    * @param index poradi cisla (pocitano od 0)
+    * @return Fibonacciho cislo na danem poradi
+    */
+   public static void main(String[] args){
+      if(index == 0) return 0;
+      if(index == 1) return 1;
+      int prePre = 0; //predminule cislo
+      int pre = 1; //minule cislo
+      int result = 0; //vysledek
+      for(int i = 1; i < index; i++){ //pocitame od druheho indexu
+         result = prePre + pre; //vysledek je soucet dvou minulych cisel
+         prePre = pre; //v dalsim kroku je minule predminulym
+         pre = result; //a vysledek je minulym cislem
+      }
+      return result;
+   }
+}
