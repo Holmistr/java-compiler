@@ -24,9 +24,11 @@ NOT_EQUAL:          '!=';
 AND:                '&&';
 OR:                 '||';
 
+ESCAPED_QUOTE:      '\\"';
+
 FLOAT:              Digits? '.' Digits FloatTypeSuffix? | Digits FloatTypeSuffix;
 INT:                ('0' | Non_zero_digit Digits?);
-STRING_CONSTRUCT:   '"' (~'"' | '\"')* '"';
+STRING_CONSTRUCT:   '"' (ESCAPED_QUOTE | .)*? '"';
 
 IDENTIFIER:         ('$' | Letter | '_')('$' | Letter| Digit | '_')*;
 
@@ -46,23 +48,21 @@ packageStatement: 'package' identifier ('.' identifier)* ';';
 importStatement: 'import' identifier ('.' identifier)* '.*'? ';';
 
 clazzWithEof: clazz EOF; //helper class for testing purposes
-clazz: clazzAccessModifiers? 'class' identifier '{' member* '}';
+clazz: clazzAccessModifiers? 'class' identifier '{' (field | method)* '}';
 
 clazzAccessModifiers: 'public';
 
-member: field | method;
+field: fieldAndMethodAccessModifiers* variableDeclarationWithInitialization ';';
 
-field: fieldAndMethodAccessModifiers? fieldAndMethodOtherModifiers? variableDeclarationWithInitialization ';';
-
-method: fieldAndMethodAccessModifiers? fieldAndMethodOtherModifiers? (identifier | 'void')? identifier '(' parametersDeclaration? ')' '{' methodBody '}' ;
+method: fieldAndMethodAccessModifiers* returnType? identifier '(' parametersDeclaration? ')' '{' methodBody '}' ;
+returnType: identifier ('[' ']')* | 'void';
 
 parametersDeclaration: parameterDeclaration (',' parameterDeclaration)*;
 parameterDeclaration: variableDeclaration;
 
 methodBody: statements;
 
-fieldAndMethodAccessModifiers: 'public' | 'private';
-fieldAndMethodOtherModifiers: 'static';
+fieldAndMethodAccessModifiers: 'public' | 'private' | 'static';
 
 statementWithEof: statement EOF; //helper rule for testing purposes
 statement: 'for' '(' forType ')' block
@@ -75,7 +75,8 @@ statement: 'for' '(' forType ')' block
     | variableDeclarationWithInitialization ';'
     | statementExpression ';';
 statementExpression: expression;
-statements: (statement)*;
+statementsWithEof: statements EOF; //helper rule for testing purposes
+statements: statement*;
 
 block : '{' statements '}' | statement;
 
@@ -83,30 +84,40 @@ forType: (expression | variableDeclarationWithInitialization)? ';' expression? '
 
 switchConstruct: 'switch' '(' expression ')' '{' ('case' expression ':' statements)* ('default:' statements)? '}';
 
-variableDeclaration: type identifier ('[' ']')* | type ('[' ']')* identifier;
+variableDeclaration: variableDeclarationType identifier;
+variableDeclarationType: type | type ('[' ']')* ;
 variableDeclarationWithInitialization: variableDeclaration ('=' expression)?;
 
 expressionWithEof: expression EOF; // helper rule for testing purposes
-expression: '(' expression ')'
-    | expression (PLUS | MINUS) expression
-    | expression (MULTIPLY | DIVIDE) expression
-    | expression (LT | LTE | GT | GTE) expression
-    | expression (EQUAL | NOT_EQUAL) expression
-    | expression (AND | OR) expression
-    | expression ('++' | '--')
-    | ('!') expression
-    | expression ('[' expression ']')+
-    | expression '(' expressionList? ')'
-    | 'new' identifier ( '(' expressionList? ')' | ('[' expression ']')+ )
-    | expression '=' expression
-    | '(' type ')' expression
-    | expression '.' identifier
-    | stringConstruct
-    | type;
+expression: '(' expression ')'                      # parenthessesExpression
+    | expression PLUS expression                    # add
+    | expression MINUS expression                   # subtract
+    | expression MULTIPLY expression                # multiply
+    | expression DIVIDE expression                  # divide
+    | expression LT expression                      # lt
+    | expression LTE expression                     # lte
+    | expression GT expression                      # gt
+    | expression GTE expression                     # gte
+    | expression (EQUAL | NOT_EQUAL) expression     # equality
+    | expression (AND | OR) expression              # logical
+    | expression ('++' | '--')                      # unaryAddition
+    | ('!') expression                              # negation
+    | expression ('[' expression ']')+              # array
+    | expression '(' expressionList? ')'            # methodCall
+    | 'new' identifier ( '(' expressionList? ')' | ('[' expression ']')+ )  # new
+    | expression '=' expression                     # assignment
+    | '(' type ')' expression                       # typeCast
+    | expression '.' expression                     # chain
+    | stringConstruct                               # stringConstruction
+    | type                                          # atom
+    ;
 
 expressionList: expression (',' expression)*;
 
-type: number | bool | identifier;
+type: number
+    | bool
+    | identifier
+    ;
 number: (PLUS | MINUS)? numberHelper ;
 numberHelper: INT | FLOAT;
 bool: TRUE | FALSE;

@@ -1,0 +1,39 @@
+public class TestClass {
+   public static void main(String[] args){
+        boolean lt = 3 < 4;
+        System.out.println(lt);
+
+        boolean nlt = 4 <= 3;
+        System.out.println(nlt);
+
+        boolean lt2 = 3 > 4;
+        System.out.println(lt2);
+
+        boolean nlt2 = 4 >= 3;
+        System.out.println(nlt2);
+
+
+/*
+        System.out.println(3 * 4);
+        System.out.println(4 / 2);
+        System.out.println(4 - 3);
+
+        int i = 1 + 3;
+        int z = i;
+        System.out.println(i);
+        System.out.println(i + z);
+        System.out.println(i + 10);
+
+        boolean x = true;
+        System.out.println(x);
+
+        String y = new String("Come on!");
+        System.out.println(y.length());
+
+        System.out.println("ahoj");
+        System.out.println(new String("zdar"));
+        System.out.println(9);
+        System.out.println(9 + 1);
+        System.out.println(true);*/
+   }
+}

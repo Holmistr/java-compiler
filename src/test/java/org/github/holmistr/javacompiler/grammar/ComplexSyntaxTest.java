@@ -1,13 +1,9 @@
 package org.github.holmistr.javacompiler.grammar;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.github.holmistr.javacompiler.util.Util;
 import org.junit.Test;
-
-import java.io.FileInputStream;
-import java.io.IOException;
 
 /**
  * Testing that the grammar recognizes various valid Java classes, including package and import statements.
@@ -18,33 +14,28 @@ public class ComplexSyntaxTest {
 
     @Test
     public void testAdvancedStatementAndBlockTestSourceWithoutImportsAndPackage() {
-        parseFile("advanced_statement_and_block_test_source_without_imports_and_package.txt");
+        parseFile("AdvancedStatementAndBlockTestSourceWithoutImportsAndPackage.txt");
     }
 
     @Test
     public void testAdvancedStatementAndBlockTestSource() {
-        parseFile("advanced_statement_and_block_test_source.txt");
+        parseFile("AdvancedStatementAndBlockTestSource.txt");
     }
 
     @Test
-    public void testFibonnacitSource() {
-        parseFile("fibonnaci_source.txt");
+    public void testFibonnaciSource() {
+        parseFile("FibonnaciSource.txt");
+    }
+
+    @Test
+    public void testBasicClassSource() {
+        parseFile("BasicClass.txt");
     }
 
     private void parseFile(String filename) {
         filename = "src/test/resources/testSources/" + filename;
-        ANTLRInputStream input = null;
-        try {
-            FileInputStream inputStream = new FileInputStream(filename);
-            input = new ANTLRInputStream(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        JavaGrammarLexer lexer = new JavaGrammarLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        JavaGrammarParser parser = new JavaGrammarParser(tokens);
+        JavaGrammarParser parser = Util.createGrammarParserFromFile(filename);
         parser.setErrorHandler(new BailErrorStrategy()); // fail on first mismatch
         ParseTree tree = parser.start();
-        //System.out.println(tree.toStringTree(parser)); // print LISP-style tree
     }
 }

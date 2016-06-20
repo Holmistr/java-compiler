@@ -1,11 +1,8 @@
 package org.github.holmistr.javacompiler.grammar;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.junit.Ignore;
+import org.github.holmistr.javacompiler.util.Util;
 import org.junit.Test;
 
 /**
@@ -23,7 +20,7 @@ public class BasicStatementAndBlockTest {
         statement = "String string = new String(\"Hello\");";
         parseStatement(statement);
 
-        statement = "String string[][] = new String[10][10];";
+        statement = "String[][] string = new String[10][10];";
         parseStatement(statement);
 
         statement = "String string = \"Hello world\";";
@@ -68,11 +65,20 @@ public class BasicStatementAndBlockTest {
 
     @Test
     public void testIfElseIfElse() {
-        String statement = "if (i < 0) System.out.println(\"Hello\"); else if (i > 0) System.out.println(\"What?\") else System.out.println(\"Nooooo!\");";
+        String statement = "if (i < 0) System.out.println(\"Hello\"); else if (i > 0) System.out.println(\"What?\"); else System.out.println(\"Nooooo!\");";
         parseStatement(statement);
 
-        statement = "if (i < 0) { System.out.println(\"Hello\"); System.out.println(\"World!\"); } if (i > 0) { System.out.println(\"What?\"); System.out.println(\"World!\"); } else { System.out.println(\"Noooo!\"); }";
+        statement = "if (i < 0) { System.out.println(\"Hello\"); System.out.println(\"World!\"); } else if (i > 0) { System.out.println(\"What?\"); System.out.println(\"World!\"); } else { System.out.println(\"Noooo!\"); }";
         parseStatement(statement);
+    }
+
+    @Test
+    public void testIfAfterIf() {
+        String statement = "if (i < 0) System.out.println(\"Hello\"); if (i > 0) System.out.println(\"What?\");";
+        parseStatements(statement);
+
+        statement = "if (i < 0) { System.out.println(\"Hello\"); System.out.println(\"World!\"); } if (i > 0) { System.out.println(\"What?\"); System.out.println(\"World!\"); }";
+        parseStatements(statement);
     }
 
     @Test
@@ -112,12 +118,14 @@ public class BasicStatementAndBlockTest {
     }
 
     private void parseStatement(String statement) {
-        ANTLRInputStream input = new ANTLRInputStream(statement);
-        JavaGrammarLexer lexer = new JavaGrammarLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        JavaGrammarParser parser = new JavaGrammarParser(tokens);
+        JavaGrammarParser parser = Util.createGrammarParserFromString(statement);
         parser.setErrorHandler(new BailErrorStrategy()); // fail on first mismatch
         ParseTree tree = parser.statementWithEof();
-        //System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+    }
+
+    private void parseStatements(String statement) {
+        JavaGrammarParser parser = Util.createGrammarParserFromString(statement);
+        parser.setErrorHandler(new BailErrorStrategy()); // fail on first mismatch
+        ParseTree tree = parser.statementsWithEof();
     }
 }

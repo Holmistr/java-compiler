@@ -1,9 +1,8 @@
 package org.github.holmistr.javacompiler.grammar;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.BailErrorStrategy;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.github.holmistr.javacompiler.util.Util;
 import org.junit.Test;
 
 /**
@@ -112,12 +111,8 @@ public class AdvancedStatementAndBlockTest {
     }
 
     private void parseClass(String statement) {
-        ANTLRInputStream input = new ANTLRInputStream(statement);
-        JavaGrammarLexer lexer = new JavaGrammarLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        JavaGrammarParser parser = new JavaGrammarParser(tokens);
+        JavaGrammarParser parser = Util.createGrammarParserFromString(statement);
         parser.setErrorHandler(new BailErrorStrategy()); // fail on first mismatch
         ParseTree tree = parser.clazzWithEof();
-        //System.out.println(tree.toStringTree(parser)); // print LISP-style tree
     }
 }
